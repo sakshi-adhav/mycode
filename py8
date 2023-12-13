@@ -1,0 +1,166 @@
+#include <iostream>
+using namespace std;
+
+
+struct SeatNode {
+    int seatNumber;
+    bool isBooked;
+    SeatNode* next;
+    SeatNode* prev;
+};
+
+
+SeatNode* initializeRow(int seats) {
+    SeatNode* head = nullptr;
+    SeatNode* temp = nullptr;
+
+    for (int i = 1; i <= seats; ++i) {
+        SeatNode* newNode = new SeatNode;
+        newNode->seatNumber = i;
+        newNode->isBooked = false;
+        newNode->next = nullptr;
+
+        if (head == nullptr) {
+            head = newNode;
+            temp = head;
+        } else {
+            temp->next = newNode;
+            newNode->prev = temp;
+            temp = newNode;
+        }
+    }
+
+    // Connect the last and first nodes to make it circular
+    temp->next = head;
+    head->prev = temp;
+
+    return head;
+}
+
+
+void displayAvailableSeats(SeatNode* head) {
+    SeatNode* current = head;
+
+    cout << "Available Seats: ";
+    do {
+        if (!current->isBooked) {
+            cout << current->seatNumber << " ";
+        }
+        current = current->next;
+    } while (current != head);
+
+    cout << endl;
+}
+
+
+void bookSeat(SeatNode* head, int seatNumber) {
+    SeatNode* current = head;
+
+    do {
+        if (current->seatNumber == seatNumber && !current->isBooked) {
+            current->isBooked = true;
+            cout << "Seat " << seatNumber << " booked successfully.\n";
+            return;
+        }
+        current = current->next;
+    } while (current != head);
+
+    cout << "Seat " << seatNumber << " is already booked or invalid.\n";
+}
+
+
+void cancelBooking(SeatNode* head, int seatNumber) {
+    SeatNode* current = head;
+
+    do {
+        if (current->seatNumber == seatNumber && current->isBooked) {
+            current->isBooked = false;
+            cout << "Booking for seat " << seatNumber << " canceled successfully.\n";
+            return;
+        }
+        current = current->next;
+    } while (current != head);
+
+    cout << "Seat " << seatNumber << " is not booked or invalid.\n";
+}
+
+int main() {
+    const int numRows = 10;
+    const int seatsPerRow = 7;
+
+    // Array to store pointers to the head of each row
+    SeatNode* rows[numRows];
+
+    // Initialize each row
+    for (int i = 0; i < numRows; ++i) {
+        rows[i] = initializeRow(seatsPerRow);
+    }
+
+    int choice;
+    do {
+        cout << "\nMenu:\n";
+        cout << "1. Display available seats\n";
+        cout << "2. Book a seat\n";
+        cout << "3. Cancel booking\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                // Display available seats in a specified row
+                int rowToDisplay;
+                cout << "Enter row number (1 to " << numRows << "): ";
+                cin >> rowToDisplay;
+
+                if (rowToDisplay >= 1 && rowToDisplay <= numRows) {
+                    displayAvailableSeats(rows[rowToDisplay - 1]);
+                } else {
+                    cout << "Invalid row number.\n";
+                }
+                break;
+
+            case 2:
+                // Book a seat in a specified row
+                int rowToBook, seatToBook;
+                cout << "Enter row number (1 to " << numRows << "): ";
+                cin >> rowToBook;
+                cout << "Enter seat number (1 to " << seatsPerRow << "): ";
+                cin >> seatToBook;
+
+                if (rowToBook >= 1 && rowToBook <= numRows && seatToBook >= 1 && seatToBook <= seatsPerRow) {
+                    bookSeat(rows[rowToBook - 1], seatToBook);
+                } else {
+                    cout << "Invalid row or seat number.\n";
+                }
+                break;
+
+            case 3:
+                // Cancel booking in a specified row
+                int rowToCancel, seatToCancel;
+                cout << "Enter row number (1 to " << numRows << "): ";
+                cin >> rowToCancel;
+                cout << "Enter seat number (1 to " << seatsPerRow << "): ";
+                cin >> seatToCancel;
+
+                if (rowToCancel >= 1 && rowToCancel <= numRows && seatToCancel >= 1 && seatToCancel <= seatsPerRow) {
+                    cancelBooking(rows[rowToCancel - 1], seatToCancel);
+                } else {
+                    cout << "Invalid row or seat number.\n";
+                }
+                break;
+
+            case 4:
+                // Exit the program
+                cout << "Exiting program.\n";
+                break;
+
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+                break;
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
