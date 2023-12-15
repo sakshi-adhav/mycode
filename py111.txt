@@ -1,0 +1,98 @@
+#include <iostream>
+using namespace std;
+
+const int MAX_SIZE = 100; // Maximum size of the queue
+
+struct Queue {
+    int elements[MAX_SIZE];
+    int front, rear;
+};
+
+void initializeQueue(Queue& q) {
+    q.front = -1;
+    q.rear = -1;
+}
+
+bool isFull(const Queue& q) {
+    return (q.rear == MAX_SIZE - 1);
+}
+
+bool isEmpty(const Queue& q) {
+    return (q.front == -1 || q.front > q.rear);
+}
+
+void enqueue(Queue& q, int element) {
+    if (!isFull(q)) {
+        if (q.front == -1) {
+            q.front = 0; // Adjust front if it's the first element
+        }
+        q.elements[++q.rear] = element;
+        cout << element << " enqueued successfully.\n";
+    } else {
+        cout << "Queue is full. Cannot enqueue.\n";
+    }
+}
+
+void dequeue(Queue& q) {
+    if (!isEmpty(q)) {
+        cout << q.elements[q.front] << " dequeued.\n";
+        if (q.front == q.rear) {
+            initializeQueue(q); // Reset front and rear if it's the last element
+        } else {
+            q.front++;
+        }
+    } else {
+        cout << "Queue is empty. Cannot dequeue.\n";
+    }
+}
+
+void displayQueue(const Queue& q) {
+    if (!isEmpty(q)) {
+        cout << "Queue elements: ";
+        for (int i = q.front; i <= q.rear; ++i) {
+            cout << q.elements[i] << " ";
+        }
+        cout << endl;
+    } else {
+        cout << "Queue is empty.\n";
+    }
+}
+
+int main() {
+    Queue myQueue;
+    initializeQueue(myQueue);
+    int choice;
+
+    do {
+        cout << "\nQueue Operations Menu:\n";
+        cout << "1. Enqueue (Insert)\n";
+        cout << "2. Dequeue (Delete)\n";
+        cout << "3. Display Queue\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                int element;
+                cout << "Enter the element to enqueue: ";
+                cin >> element;
+                enqueue(myQueue, element);
+                break;
+            }
+            case 2:
+                dequeue(myQueue);
+                break;
+            case 3:
+                displayQueue(myQueue);
+                break;
+            case 4:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
